@@ -1,4 +1,3 @@
-```markdown
 # Project PRAVAH
 
 **AI-Driven Urban Flood Early Warning System**
@@ -25,7 +24,6 @@ PRAVAH is a machine learning pipeline and real-time dashboard built to predict u
    ```bash
    git clone [https://github.com/HemanthB-007/Project-PRAVAH.git](https://github.com/HemanthB-007/Project-PRAVAH.git)
    cd Project-PRAVAH
-   ```
 
 2. Create and activate a virtual environment:
    ```bash
