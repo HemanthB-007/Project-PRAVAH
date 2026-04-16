@@ -1,3 +1,4 @@
+```markdown
 # Project PRAVAH
 
 **AI-Driven Urban Flood Early Warning System**
@@ -19,27 +20,28 @@ PRAVAH is a machine learning pipeline and real-time dashboard built to predict u
 * `training/`: Feature engineering, model training, and evaluation scripts.
 
 ## Setup Instructions
+
 1. Clone the repository:
    ```bash
    git clone [https://github.com/HemanthB-007/Project-PRAVAH.git](https://github.com/HemanthB-007/Project-PRAVAH.git)
    cd Project-PRAVAH
-   Create and activate a virtual environment:
+   ```
 
-2. Bash
-python -m venv venv
-venv\Scripts\activate
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
+   ```
 
 3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Bash
-pip install -r requirements.txt
-4. Authors:
-Hemanth Boddupally
-
-Gautam Kumar
-
-Maddula P V N Sai Sri Akshay
-
-Hema Sri
-
-Parampreet Kaur
+## Authors
+* Hemanth Boddupally
+* Gautam Kumar
+* Parampreet Kaur
+* Maddula P V N Sai Sri Akshay
+* Hema Sri
+```
