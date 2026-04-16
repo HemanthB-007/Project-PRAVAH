@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRAVAH — Flood Intelligence Platform</title>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background Rain Animation -->
+  <canvas id="rain-canvas"></canvas>
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header>
+    <div class="header-brand">
+      <div class="header-logo">🌊</div>
+      <div class="header-title-group">
+        <div class="header-title">PRAVAH</div>
+        <div class="header-subtitle">Predictive Real-time Aquatic Vulnerability &amp; Hazard System</div>
+      </div>
+    </div>
+
+    <div class="header-meta">
+      <div class="header-stat">
+        <span class="header-stat-label">System Time</span>
+        <span class="header-stat-value" id="live-clock">--:--:--</span>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-stat">
+        <span class="header-stat-label">Date</span>
+        <span class="header-stat-value" id="live-date">--</span>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-stat">
+        <span class="header-stat-label">System Status</span>
+        <span class="header-stat-value" style="display:flex;align-items:center;gap:6px;">
+          <span class="status-dot" id="system-dot"></span>
+          OPERATIONAL
+        </span>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-stat">
+        <span class="header-stat-label">Location</span>
+        <span class="header-stat-value">Chennai, TN</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Dashboard Grid ─────────────────────────────────────── -->
+  <div class="dashboard">
+
+    <!-- ── RAINFALL SIMULATOR ─── -->
+    <div class="card card--simulator">
+      <div class="card-label">Input Module</div>
+      <div class="card-title">Rainfall Simulator</div>
+
+      <div class="rain-display">
+        <div class="rain-value-big" id="rainValueDisplay">50</div>
+        <div class="rain-unit">mm / day</div>
+      </div>
+
+      <div class="slider-wrap">
+        <div class="slider-track-fill" id="slider-track-fill"></div>
+        <input
+          type="range"
+          min="0"
+          max="200"
+          value="50"
+          id="rainSlider"
+          step="1"
+        />
+      </div>
+      <div class="slider-markers">
+        <span class="slider-marker">0</span>
+        <span class="slider-marker">50</span>
+        <span class="slider-marker">100</span>
+        <span class="slider-marker">150</span>
+        <span class="slider-marker">200 mm</span>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div class="card-label" style="margin-bottom:10px;">Simulation Progress</div>
+        <div class="sim-progress" id="sim-progress">
+          <div class="sim-progress-bar"></div>
+        </div>
+        <div class="sim-day-label" id="sim-day-label"></div>
+      </div>
+    </div>
+
+    <!-- ── RISK GAUGE ─── -->
+    <div class="card card--risk" id="risk-card">
+      <div class="card-label">Risk Assessment</div>
+      <div class="card-title">Flood Probability Index</div>
+
+      <div class="gauge-wrap">
+        <div class="gauge-ring-container">
+          <svg class="gauge-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+            <circle class="gauge-track" cx="80" cy="80" r="65" />
+            <circle class="gauge-fill" id="gauge-fill" cx="80" cy="80" r="65" />
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-percent" id="gauge-percent">0%</div>
+            <div class="gauge-label-inner">Probability</div>
+          </div>
+        </div>
+
+        <div class="risk-level-badge" id="risk-badge">LOW RISK</div>
+
+        <div class="risk-stats">
+          <div class="risk-stat">
+            <span class="risk-stat-val" id="ribbon-rain">50 mm</span>
+            <span class="risk-stat-label">Current Rain</span>
+          </div>
+          <div class="risk-stat">
+            <span class="risk-stat-val" id="last-updated">--:--:--</span>
+            <span class="risk-stat-label">Last Updated</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MAP ─── -->
+    <div class="card card--map">
+      <div class="card-label">Geospatial Intelligence</div>
+      <div class="card-title">Chennai Flood Risk Map — Ward-Level Analysis</div>
+      <div class="map-frame-wrap">
+        <iframe
+          id="mapFrame"
+          src="../flood_risk_map.html"
+          title="Chennai Flood Risk Map"
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- ── RAINFALL TREND ─── -->
+    <div class="card card--trend">
+      <div class="card-label">Temporal Analysis</div>
+      <div class="card-title">7-Day Rainfall Trend</div>
+      <div class="chart-wrap">
+        <canvas id="rainChart" height="180"></canvas>
+      </div>
+    </div>
+
+    <!-- ── AUTOMATED PROTOCOL ─── -->
+    <div class="card card--protocol">
+      <div class="card-label">Response Engine</div>
+      <div class="card-title">Automated Response Protocol</div>
+
+      <div class="protocol-status" id="protocol-status">
+        <div class="protocol-icon" id="protocol-icon">✅</div>
+        <div class="protocol-text">
+          <h4 id="protocol-title">NORMAL CONDITIONS</h4>
+          <p id="protocol-action">Standard operating procedures. No severe infrastructure threats detected at current rainfall levels.</p>
+        </div>
+      </div>
+
+      <div class="protocol-steps" id="protocol-steps">
+        <div class="protocol-step">
+          <span class="step-num">01</span>
+          <span class="step-text">Continue routine drainage maintenance</span>
+        </div>
+        <div class="protocol-step">
+          <span class="step-num">02</span>
+          <span class="step-text">Monitor weather forecast updates</span>
+        </div>
+        <div class="protocol-step">
+          <span class="step-num">03</span>
+          <span class="step-text">Maintain operational readiness</span>
+        </div>
+        <div class="protocol-step">
+          <span class="step-num">04</span>
+          <span class="step-text">Log current sensor readings</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SHAP / AI IMPORTANCE ─── -->
+    <div class="card card--shap">
+      <div class="card-label">Explainability</div>
+      <div class="card-title">AI Feature Importance (SHAP)</div>
+      <div class="img-frame">
+        <img src="shap_feature_importance.png" alt="SHAP Feature Importance" />
+      </div>
+    </div>
+
+    <!-- ── MODEL EVALUATION ─── -->
+    <div class="card card--model">
+      <div class="card-label">Model Performance</div>
+      <div class="card-title">Confusion Matrix — Validation Set</div>
+      <div class="img-frame">
+        <img src="confusion_matrix.png" alt="Confusion Matrix" />
+      </div>
+    </div>
+
+    <!-- ── COMMAND CONTROLS ─── -->
+    <div class="card card--controls">
+      <div class="card-label">Command Center</div>
+      <div class="card-title">System Operations</div>
+
+      <div class="controls-grid">
+
+        <button class="ctrl-btn ctrl-btn--weather" id="btn-weather" onclick="fetchLiveWeather()">
+          <div class="ctrl-btn-icon">⛅</div>
+          <div class="ctrl-btn-info">
+            <span class="ctrl-btn-name">Sync Live Weather</span>
+            <span class="ctrl-btn-desc">Fetch current rainfall from Open-Meteo API</span>
+          </div>
+          <span class="ctrl-btn-arrow">›</span>
+        </button>
+
+        <button class="ctrl-btn ctrl-btn--sim" id="btn-simulate" onclick="simulateMichaung()">
+          <div class="ctrl-btn-icon">🌪️</div>
+          <div class="ctrl-btn-info">
+            <span class="ctrl-btn-name">Replay Cyclone Michaung</span>
+            <span class="ctrl-btn-desc">Historical simulation — Dec 1–4, 2023</span>
+          </div>
+          <span class="ctrl-btn-arrow">›</span>
+        </button>
+
+        <button class="ctrl-btn ctrl-btn--pdf" onclick="generatePDFReport()">
+          <div class="ctrl-btn-icon">📄</div>
+          <div class="ctrl-btn-info">
+            <span class="ctrl-btn-name">Export Risk Report</span>
+            <span class="ctrl-btn-desc">Download full dashboard as PDF</span>
+          </div>
+          <span class="ctrl-btn-arrow">›</span>
+        </button>
+
+      </div>
+    </div>
+
+  </div><!-- /dashboard -->
+
+  <!-- ── Status Ribbon ────────────────────────────────────────── -->
+  <div class="status-ribbon">
+    <div class="ribbon-item">
+      <span class="ribbon-dot" id="ribbon-dot"></span>
+      LIVE
+    </div>
+    <div class="ribbon-sep"></div>
+    <div class="ribbon-item">
+      Risk Level: <strong id="ribbon-risk" style="margin-left:4px;">LOW RISK</strong>
+    </div>
+    <div class="ribbon-sep"></div>
+    <div class="ribbon-item">
+      Flood Prob: <strong id="ribbon-prob" style="margin-left:4px;color:#00d4ff;">--</strong>
+    </div>
+    <div class="ribbon-sep"></div>
+    <div class="ribbon-item">
+      Rainfall: <strong id="ribbon-rain-ribbon" style="margin-left:4px;color:#00d4ff;">-- mm</strong>
+    </div>
+    <div class="ribbon-version ribbon-item">PRAVAH v2.0 — Chennai Flood Intelligence</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

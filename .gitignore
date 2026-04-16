@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+venv/
+cache/
+training/cache/
+datasets/**/*.csv
+datasets/**/*.pbf
+datasets/**/*.tif
+datasets/**/*.geojson
+*.pbf
+models/*.pkl

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>PRAVAH Zone Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="datasets/processed/chennai_zones.js?v=new"></script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <script>
+        // Initialize the map centered on Chennai
+        var map = L.map('map').setView([13.0827, 80.2707], 11);
+
+        // Add the dark professional basemap
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+        }).addTo(map);
+
+        let geojsonLayer;
+        let currentZoneData = {};
+
+        // 2. NO MORE FETCH! We just read the variable directly from the script we loaded in the head
+        let data = chennaiGeoJSON;
+
+        // We tag each feature with an ID (0 to 226) so it matches our API dictionary keys
+        data.features.forEach((feature, index) => {
+            feature.properties.zone_id = String(index);
+        });
+
+        // Draw the GeoJSON on the map
+        geojsonLayer = L.geoJSON(data, {
+            style: function (feature) {
+                return {
+                    fillColor: "#27ae60", // Default to Green
+                    weight: 0.5,
+                    opacity: 1,
+                    color: '#000000', // Border color
+                    fillOpacity: 0.75
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                // Set up empty popups that will be filled later
+                layer.bindPopup("<b>Zone:</b> " + feature.properties.name + "<br>Awaiting Data...");
+            }
+        }).addTo(map);
+
+
+        // 3. Listen for the Risk Payload from index.html
+        window.addEventListener("message", function (event) {
+            if (event.data && event.data.zones) {
+                currentZoneData = event.data.zones;
+
+                if (geojsonLayer) {
+                    // Instantly recolor all 227 zones!
+                    geojsonLayer.setStyle(function (feature) {
+                        let zId = feature.properties.zone_id;
+                        let zRisk = currentZoneData[zId] ? currentZoneData[zId].risk_level : "LOW";
+
+                        let newColor = "#27ae60"; // Green
+                        if (zRisk === "HIGH") newColor = "#e74c3c"; // Red
+                        else if (zRisk === "MODERATE") newColor = "#f39c12"; // Orange
+
+                        return { fillColor: newColor, fillOpacity: 0.75 };
+                    });
+
+                    // Update the hover popups with exact math
+                    geojsonLayer.eachLayer(function (layer) {
+                        let zId = layer.feature.properties.zone_id;
+                        if (currentZoneData[zId]) {
+                            let probPercent = (currentZoneData[zId].probability * 100).toFixed(3);
+                            layer.setPopupContent(
+                                "<b>" + currentZoneData[zId].name + "</b><br>" +
+                                "Risk Level: <b>" + currentZoneData[zId].risk_level + "</b><br>" +
+                                "Probability: " + probPercent + "%"
+                            );
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
