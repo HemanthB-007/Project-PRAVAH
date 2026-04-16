@@ -42,4 +42,3 @@ PRAVAH is a machine learning pipeline and real-time dashboard built to predict u
 * Parampreet Kaur
 * Maddula P V N Sai Sri Akshay
 * Hema Sri
-```
