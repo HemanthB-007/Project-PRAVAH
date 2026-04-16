@@ -23,3 +23,23 @@ PRAVAH is a machine learning pipeline and real-time dashboard built to predict u
    ```bash
    git clone [https://github.com/HemanthB-007/Project-PRAVAH.git](https://github.com/HemanthB-007/Project-PRAVAH.git)
    cd Project-PRAVAH
+   Create and activate a virtual environment:
+
+2. Bash
+python -m venv venv
+venv\Scripts\activate
+
+3. Install dependencies:
+
+Bash
+pip install -r requirements.txt
+4. Authors:
+Hemanth Boddupally
+
+Gautam Kumar
+
+Maddula P V N Sai Sri Akshay
+
+Hema Sri
+
+Parampreet Kaur
